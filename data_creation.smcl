@@ -1,0 +1,860 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\akadi\Documents\PhD\Data\Aid_Rad\data_creation.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res} 4 Dec 2022, 20:45:27
+{txt}
+{com}. 
+. ******************************************************************
+. * Political violence file
+. ******************************************************************
+. import excel "fatalities\Israeli and Palestinians SI Original.xls", sheet("PA") firstrow clear
+{res}{txt}
+{com}. 
+. gen     byte lfs_district1      =       .                               
+{txt}(10168 missing values generated)
+
+{com}. replace         lfs_district1   =       1       if      district=="Jenin"
+{txt}(436 real changes made)
+
+{com}. replace         lfs_district1   =       2       if      district=="Tubas"
+{txt}(52 real changes made)
+
+{com}. replace         lfs_district1   =       3       if      district=="Tulkarm"
+{txt}(244 real changes made)
+
+{com}. replace         lfs_district1   =       4       if      district=="Qalqilya"
+{txt}(84 real changes made)
+
+{com}. replace         lfs_district1   =       5       if      district=="Salfit"
+{txt}(38 real changes made)
+
+{com}. replace         lfs_district1   =       6       if      district=="Nablus"
+{txt}(577 real changes made)
+
+{com}. replace         lfs_district1   =       7       if      district=="Ramallah_&_Al-Bireh"
+{txt}(300 real changes made)
+
+{com}. replace         lfs_district1   =       8       if      district=="Jerusalem"
+{txt}(179 real changes made)
+
+{com}. replace         lfs_district1   =       9       if      district=="Jericho"
+{txt}(23 real changes made)
+
+{com}. replace         lfs_district1   =       10      if      district=="bethlehem"
+{txt}(168 real changes made)
+
+{com}. replace         lfs_district1   =       11      if      district=="Hebron"
+{txt}(335 real changes made)
+
+{com}. replace         lfs_district1   =       12      if      district=="North_Gaza"
+{txt}(1839 real changes made)
+
+{com}. replace         lfs_district1   =       13      if      district=="Gaza"
+{txt}(2617 real changes made)
+
+{com}. replace         lfs_district1   =       14      if      district=="Khanyunis"
+{txt}(1325 real changes made)
+
+{com}. replace         lfs_district1   =       15      if      district=="Deir_Al-Balah"
+{txt}(814 real changes made)
+
+{com}. replace         lfs_district1   =       16      if      district=="Rafah"
+{txt}(1137 real changes made)
+
+{com}. 
+. label def lfs_district2 1 "Jenin"      2 "Tubas"                        3 "Tulkarem"            4 "Qualqilya"           5 "Salfit"      6 "Nablus"   /*
+> */                       7 "Ramallah"   8 "Jerusalem"           9 "Jericho"                     10 "Bethlehem"          11 "Hebron"             12 "Gaza North/Jabalya" /*
+> */                       13 "Gaza City" 14 "Khanyounis"         15 "Deir El-Balah"      16 "Rafah"      
+{txt}
+{com}. label  val lfs_district1 lfs_district2
+{txt}
+{com}. drop   district
+{txt}
+{com}. rename lfs_district1 district
+{res}{txt}
+{com}. 
+. 
+. gen year = year(date_event)
+{txt}
+{com}. gen month = month(date_event)
+{txt}
+{com}. 
+. generate quarter = 0
+{txt}
+{com}. replace quarter = 1 if month >= 1 & month <= 3
+{txt}(2567 real changes made)
+
+{com}. replace quarter = 2 if month >= 4 & month <= 6
+{txt}(1645 real changes made)
+
+{com}. replace quarter = 3 if month >= 7 & month <= 9
+{txt}(3517 real changes made)
+
+{com}. replace quarter = 4 if month >= 10 & month <= 12
+{txt}(2439 real changes made)
+
+{com}. 
+. drop if year < 2004
+{txt}(2494 observations deleted)
+
+{com}. drop if year > 2016
+{txt}(81 observations deleted)
+
+{com}. 
+. generate pal_fatalities = 1
+{txt}
+{com}. collapse (sum) pal_fatalities, by(district year)
+{txt}
+{com}. 
+. 
+. sort district year
+{txt}
+{com}. 
+. 
+. save "Aid_Rad\Pal_ann.dta", replace
+{txt}file Aid_Rad\Pal_ann.dta saved
+
+{com}. 
+. ******************************************************************
+. * PCPSR public opinion file
+. ******************************************************************
+. 
+. use "Palestinian Public Opinion\Pcpsr\Palestinian Public Opinion dataset\pcbsr_microdata_13.dta", clear
+{txt}
+{com}. 
+. keep year quarter district locality_type sex age_group marital_status educ_level occupation sector refugee_status fam_income_nis faction_support family_members praying
+{txt}
+{com}. 
+. tabulate faction_support, generate(faction)
+
+             {txt}Choice for political party {c |}      Freq.     Percent        Cum.
+{hline 40}{c +}{hline 35}
+                                   DFLP {c |}{res}      1,158        0.88        0.88
+{txt}                                  Fateh {c |}{res}     50,087       38.04       38.92
+{txt}                             h.al-sha'b {c |}{res}        440        0.33       39.26
+{txt}                                  Hamas {c |}{res}     20,843       15.83       55.09
+{txt}                                   PFLP {c |}{res}      4,944        3.76       58.84
+{txt}                                   Fida {c |}{res}        559        0.42       59.27
+{txt}                  Independent Islamists {c |}{res}      4,373        3.32       62.59
+{txt}               Independent Nationalists {c |}{res}      6,142        4.67       67.25
+{txt}                            Independent {c |}{res}        466        0.35       67.61
+{txt}                          Islamic Jihad {c |}{res}      3,566        2.71       70.32
+{txt}                                 Others {c |}{res}      3,200        2.43       72.75
+{txt}                                 No one {c |}{res}     34,458       26.17       98.92
+{txt}                                    PPP {c |}{res}        905        0.69       99.61
+{txt}                    Independent leftist {c |}{res}         11        0.01       99.62
+{txt}national inititiative (almubadara al wa {c |}{res}        383        0.29       99.91
+{txt}       third way headed by salam feyyad {c |}{res}        123        0.09      100.00
+{txt}{hline 40}{c +}{hline 35}
+                                  Total {c |}{res}    131,658      100.00
+{txt}
+{com}. 
+. rename faction1 DFLP
+{res}{txt}
+{com}. rename faction2 Fatah
+{res}{txt}
+{com}. rename faction3 h_al_shab
+{res}{txt}
+{com}. rename faction4 Hamas
+{res}{txt}
+{com}. rename faction5 PFLP
+{res}{txt}
+{com}. rename faction6 Fida
+{res}{txt}
+{com}. rename faction7 Ind_Islamists
+{res}{txt}
+{com}. rename faction8 Ind_Nationalists
+{res}{txt}
+{com}. rename faction9 Independent
+{res}{txt}
+{com}. rename faction10 Islamic_Jihad
+{res}{txt}
+{com}. rename faction11 Others
+{res}{txt}
+{com}. rename faction12 No_one
+{res}{txt}
+{com}. rename faction13 PPP
+{res}{txt}
+{com}. rename faction14 Ind_leftist
+{res}{txt}
+{com}. rename faction15 national_inititiative
+{res}{txt}
+{com}. rename faction16 third_way
+{res}{txt}
+{com}. 
+. drop if year < 2004
+{txt}(76668 observations deleted)
+
+{com}. 
+. replace Islamic_Jihad = 1 if faction_support == 7 | faction_support == 10
+{txt}(1654 real changes made)
+
+{com}. generate other_fac = 0
+{txt}
+{com}. replace other_fac = 1 if faction_support == 1 | faction_support == 3 | faction_support == 5  | faction_support == 6  | faction_support == 8 | faction_support == 9 | faction_support == 11  | faction_support == 13  | faction_support == 14 | faction_support == 15  | faction_support == 16
+{txt}(5345 real changes made)
+
+{com}. 
+. sort district year
+{txt}
+{com}. 
+. save "Aid_Rad\faction_support.dta", replace
+{txt}file Aid_Rad\faction_support.dta saved
+
+{com}. 
+. ******************************************************************
+. * Palestinian households file
+. ******************************************************************
+. use "Households assistance\hh_aid.dta", clear
+{txt}(Written by R.              )
+
+{com}. 
+. collapse assist_value assistance pna charity international other received_pna received_charity received_international received_other [aw = rw], by(district year)
+{txt}
+{com}. 
+. sort district year
+{txt}
+{com}. 
+. 
+. 
+. save "Aid_Rad\hh.dta", replace
+{txt}(note: file Aid_Rad\hh.dta not found)
+file Aid_Rad\hh.dta saved
+
+{com}. 
+. ******************************************************************
+. * LFS file
+. ******************************************************************
+. 
+. use "LFS\LFS1995-2016_stata13.dta", clear
+{txt}
+{com}. 
+. gen     lfs_district1   =       .                               
+{txt}(2258665 missing values generated)
+
+{com}. replace         lfs_district1   =       1       if      district==1
+{txt}(137897 real changes made)
+
+{com}. replace         lfs_district1   =       2       if      district==5
+{txt}(58280 real changes made)
+
+{com}. replace         lfs_district1   =       3       if      district==10
+{txt}(97537 real changes made)
+
+{com}. replace         lfs_district1   =       4       if      district==20
+{txt}(71203 real changes made)
+
+{com}. replace         lfs_district1   =       5       if      district==25
+{txt}(59532 real changes made)
+
+{com}. replace         lfs_district1   =       6       if      district==15
+{txt}(154164 real changes made)
+
+{com}. replace         lfs_district1   =       7       if      district==30
+{txt}(155914 real changes made)
+
+{com}. replace         lfs_district1   =       8       if      district==40
+{txt}(157987 real changes made)
+
+{com}. replace         lfs_district1   =       9       if      district==35
+{txt}(53879 real changes made)
+
+{com}. replace         lfs_district1   =       10      if      district==45
+{txt}(121777 real changes made)
+
+{com}. replace         lfs_district1   =       11      if      district==50
+{txt}(271001 real changes made)
+
+{com}. replace         lfs_district1   =       12      if      district==55
+{txt}(146986 real changes made)
+
+{com}. replace         lfs_district1   =       13      if      district==60
+{txt}(167399 real changes made)
+
+{com}. replace         lfs_district1   =       14      if      district==70
+{txt}(140143 real changes made)
+
+{com}. replace         lfs_district1   =       15      if      district==65
+{txt}(133969 real changes made)
+
+{com}. replace         lfs_district1   =       16      if      district==75
+{txt}(138097 real changes made)
+
+{com}. 
+. label def lfs_district2 1 "Jenin"      2 "Tubas"                        3 "Tulkarem"            4 "Qualqilya"           5 "Salfit"      6 "Nablus"   /*
+> */                       7 "Ramallah"   8 "Jerusalem"           9 "Jericho"                     10 "Bethlehem"          11 "Hebron"             12 "Gaza North/Jabalya" /*
+> */                       13 "Gaza City" 14 "Khanyounis"         15 "Deir El-Balah"      16 "Rafah"     
+{txt}
+{com}. label  val lfs_district1 lfs_district2
+{txt}
+{com}. drop   district
+{txt}
+{com}. rename lfs_district1 district
+{res}{txt}
+{com}. 
+. drop if year < 2004
+{txt}(829567 observations deleted)
+
+{com}. 
+. *keep only working age persons (18-64 as in private public wage gaps paper)
+. keep if age >= 18 & age <=64
+{txt}(496221 observations deleted)
+
+{com}. 
+. *generate labor market indicators
+. gen unemployment = empch == 2 if empch ~=.
+{txt}
+{com}. *note that this is unemployment share of population, not of the labor force
+. *gen employment = empch == 1 if empch ~=.
+. gen LFP = empch ~= 3 if empch ~=.
+{txt}
+{com}. 
+. *collapse to district_year level
+. collapse unemployment LFP dwage [aw = yweight],by(district year)
+{txt}
+{com}. *unemployment as share of the labor force
+. replace unemployment = unemployment/LFP
+{txt}(178 real changes made)
+
+{com}. drop LFP
+{txt}
+{com}. sort district year
+{txt}
+{com}. 
+. save "Aid_Rad\labor_market.dta", replace
+{txt}(note: file Aid_Rad\labor_market.dta not found)
+file Aid_Rad\labor_market.dta saved
+
+{com}. 
+. 
+. ******************************************************************
+. * consumer price index
+. ******************************************************************
+. 
+. clear
+{txt}
+{com}. import excel "CPI\cpi1996-2018annual.xls", sheet("cpi") firstrow
+{res}{txt}
+{com}. 
+. drop if year > 2016 | year < 2004
+{txt}(30 observations deleted)
+
+{com}. 
+. sort region year
+{txt}
+{com}. 
+. save "Aid_Rad\cpi.dta", replace
+{txt}(note: file Aid_Rad\cpi.dta not found)
+file Aid_Rad\cpi.dta saved
+
+{com}. 
+. ******************************************************************
+. * merging files
+. ******************************************************************
+. 
+. *merge household data with labor market data
+. use "Aid_Rad\hh.dta", clear
+{txt}(Written by R.              )
+
+{com}. merge 1:1 district year using "Aid_Rad\labor_market.dta"
+{res}{txt}(label lfs_district2 already defined)
+
+{col 5}Result{col 38}# of obs.
+{col 5}{hline 41}
+{col 5}not matched{col 30}{res}              34
+{txt}{col 9}from master{col 30}{res}              16{txt}  (_merge==1)
+{col 9}from using{col 30}{res}              18{txt}  (_merge==2)
+
+{col 5}matched{col 30}{res}             160{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. 
+. drop if _merge == 2
+{txt}(18 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. save "Aid_Rad\socio_econ.dta", replace
+{txt}(note: file Aid_Rad\socio_econ.dta not found)
+file Aid_Rad\socio_econ.dta saved
+
+{com}. 
+. *merge cpi into socio-economic indicators and calculate real terms
+. use "Aid_Rad\socio_econ.dta", clear
+{txt}(Written by R.              )
+
+{com}. 
+. generate region = .
+{txt}(176 missing values generated)
+
+{com}. replace region = 1 if district < 12 & district != 8
+{txt}(110 real changes made)
+
+{com}. replace region = 2 if district >= 12
+{txt}(55 real changes made)
+
+{com}. replace region = 3 if district == 8
+{txt}(11 real changes made)
+
+{com}. 
+. sort region year
+{txt}
+{com}. 
+. merge m:1 region year using "Aid_Rad\cpi.dta"
+{res}
+{txt}{col 5}Result{col 38}# of obs.
+{col 5}{hline 41}
+{col 5}not matched{col 30}{res}               6
+{txt}{col 9}from master{col 30}{res}               0{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               6{txt}  (_merge==2)
+
+{col 5}matched{col 30}{res}             176{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. drop if _merge == 2
+{txt}(6 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. drop region
+{txt}
+{com}. sort district year
+{txt}
+{com}. 
+. *real wage
+. gen r_dwage = (dwage/cpi)*100
+{txt}(16 missing values generated)
+
+{com}. drop dwage
+{txt}
+{com}. 
+. *support in real terms
+. replace pna = (pna/cpi)*100
+{txt}(153 real changes made)
+
+{com}. replace charity = (charity/cpi)*100
+{txt}(143 real changes made)
+
+{com}. replace international = (international/cpi)*100
+{txt}(152 real changes made)
+
+{com}. replace other = (other/cpi)*100
+{txt}(153 real changes made)
+
+{com}. replace assist_value = (assist_value/cpi)*100
+{txt}(155 real changes made)
+
+{com}. 
+. drop cpi
+{txt}
+{com}. 
+. save "Aid_Rad\socio_econ.dta", replace
+{txt}file Aid_Rad\socio_econ.dta saved
+
+{com}. 
+. *merge fatalities with socio-economic indicators
+. 
+. use "Aid_Rad\socio_econ.dta", clear
+{txt}(Written by R.              )
+
+{com}. merge 1:1 district year using "Aid_Rad\Pal_ann.dta"
+{res}{txt}(label lfs_district2 already defined)
+
+{col 5}Result{col 38}# of obs.
+{col 5}{hline 41}
+{col 5}not matched{col 30}{res}              64
+{txt}{col 9}from master{col 30}{res}              36{txt}  (_merge==1)
+{col 9}from using{col 30}{res}              28{txt}  (_merge==2)
+
+{col 5}matched{col 30}{res}             140{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. 
+. *filling zero fatalities
+. replace pal_fatalities = 0 if _merge==1
+{txt}(36 real changes made)
+
+{com}. 
+. drop if _merge == 2
+{txt}(28 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. 
+. save "Aid_Rad\fat_and_econ.dta", replace
+{txt}(note: file Aid_Rad\fat_and_econ.dta not found)
+file Aid_Rad\fat_and_econ.dta saved
+
+{com}. 
+. *merge public opinion to other data
+. use "Aid_Rad\faction_support.dta", clear
+{txt}
+{com}. merge m:1 district year using "Aid_Rad\fat_and_econ.dta"
+{res}{txt}{p 0 7 2}
+(note: variable
+year was 
+int, now double to accommodate using data's values)
+{p_end}
+
+{col 5}Result{col 38}# of obs.
+{col 5}{hline 41}
+{col 5}not matched{col 30}{res}           5,097
+{txt}{col 9}from master{col 30}{res}           5,081{txt}  (_merge==1)
+{col 9}from using{col 30}{res}              16{txt}  (_merge==2)
+
+{col 5}matched{col 30}{res}          50,835{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. 
+. keep if _merge==3
+{txt}(5097 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. save "Aid_Rad\master_data.dta", replace
+{txt}(note: file Aid_Rad\master_data.dta not found)
+file Aid_Rad\master_data.dta saved
+
+{com}. 
+. ******************************************************************
+. * data clean-up
+. ******************************************************************
+. use "Aid_Rad\master_data.dta", clear
+{txt}
+{com}. 
+. *remove respondants below the age of 18
+. drop if age_group == 0
+{txt}(30 observations deleted)
+
+{com}. 
+. *remove respondents with unknown education level
+. drop if educ_level == 8
+{txt}(94 observations deleted)
+
+{com}. 
+. *reomove respondents with missing data
+. 
+. drop if faction_support == .
+{txt}(100 observations deleted)
+
+{com}. drop if age_group == .
+{txt}(152 observations deleted)
+
+{com}. drop if locality_type == .
+{txt}(1205 observations deleted)
+
+{com}. drop if educ_level == .
+{txt}(0 observations deleted)
+
+{com}. drop if sector == .
+{txt}(0 observations deleted)
+
+{com}. drop if occupation == .
+{txt}(255 observations deleted)
+
+{com}. drop if sex == .
+{txt}(72 observations deleted)
+
+{com}. drop if refugee_status == .
+{txt}(64 observations deleted)
+
+{com}. drop if marital_status == .
+{txt}(0 observations deleted)
+
+{com}. drop if praying == .
+{txt}(623 observations deleted)
+
+{com}. 
+. save "Aid_Rad\master_data.dta", replace
+{txt}file Aid_Rad\master_data.dta saved
+
+{com}. 
+. ******************************************************************
+. * create dependent variable
+. ******************************************************************
+. use "Aid_Rad\master_data.dta", clear
+{txt}
+{com}. 
+. *replace Islamic_Jihad = 1 if faction_support == 7 | faction_support == 10
+. *generate other_fac = 0
+. *replace other_fac = 1 if faction_support == 1 | faction_support == 3 | faction_support == 5  | faction_support == 6  | faction_support == 8 | faction_support == 9 | faction_support == 11  | faction_support == 13  | faction_support == 14 | faction_support == 15  | faction_support == 16
+. 
+. generate mvote = .
+{txt}(48240 missing values generated)
+
+{com}. replace mvote = 0 if Fatah == 1
+{txt}(17528 real changes made)
+
+{com}. replace mvote = 1 if Hamas == 1
+{txt}(9809 real changes made)
+
+{com}. replace mvote = 2 if Islamic_Jihad == 1
+{txt}(2551 real changes made)
+
+{com}. replace mvote = 3 if other_fac == 1
+{txt}(4571 real changes made)
+
+{com}. replace mvote = 4 if No_one == 1
+{txt}(13781 real changes made)
+
+{com}. 
+. label define mvote 0 Fatah, add
+{txt}
+{com}. label define mvote 1 Hamas, add
+{txt}
+{com}. label define mvote 2 PIJ, add
+{txt}
+{com}. label define mvote 3 other, add
+{txt}
+{com}. label define mvote 4 no_one, add
+{txt}
+{com}. 
+. save "Aid_Rad\master_data.dta", replace
+{txt}file Aid_Rad\master_data.dta saved
+
+{com}. ******************************************************************
+. * create independent variables
+. ******************************************************************
+. 
+. use "Aid_Rad\master_data.dta", clear
+{txt}
+{com}. 
+. *family income
+. gen f_inc_less_600=(fam_income_nis == 1) if fam_income_nis ~= .
+{txt}(3951 missing values generated)
+
+{com}. 
+. ************ Socio-demographic variables-
+. gen female=(sex==2 ) if sex~=.
+{txt}
+{com}. drop sex
+{txt}
+{com}. 
+. tab  marital_status 
+
+  {txt}Marital Status {c |}      Freq.     Percent        Cum.
+{hline 17}{c +}{hline 35}
+          single {c |}{res}     10,355       21.47       21.47
+{txt}         married {c |}{res}     36,131       74.90       96.36
+{txt}divorced/widowed {c |}{res}      1,654        3.43       99.79
+{txt}           dk/na {c |}{res}        100        0.21      100.00
+{txt}{hline 17}{c +}{hline 35}
+           Total {c |}{res}     48,240      100.00
+{txt}
+{com}. gen married=(marital_status==2 ) if marital_status~=.
+{txt}
+{com}. drop marital_status
+{txt}
+{com}. 
+. tab refugee_status 
+
+    {txt}Refugee {c |}
+     Status {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+    refugee {c |}{res}     21,768       45.12       45.12
+{txt}non-refugee {c |}{res}     26,472       54.88      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}     48,240      100.00
+{txt}
+{com}. gen refugees=(refugee_status==1) if refugee_status~=.
+{txt}
+{com}. drop refugee_status
+{txt}
+{com}. 
+. save "Aid_Rad\master_data.dta", replace
+{txt}file Aid_Rad\master_data.dta saved
+
+{com}. 
+. ******************************************************************
+. * create other variables
+. ******************************************************************
+. 
+. use "Aid_Rad\master_data.dta", clear
+{txt}
+{com}. 
+. *religous variables
+. generate pray =(praying == 1) if praying ~= .
+{txt}
+{com}. drop praying
+{txt}
+{com}. rename pray praying
+{res}{txt}
+{com}. 
+. *dummy for West Bank (0) and Gaza (1)
+. generate gaza = 0
+{txt}
+{com}. replace gaza = 1 if district > 11
+{txt}(17237 real changes made)
+
+{com}. 
+. tab district, gen(ddistrict)
+
+       {txt}District of {c |}
+         Residence {c |}      Freq.     Percent        Cum.
+{hline 19}{c +}{hline 35}
+             Jenin {c |}{res}      3,195        6.62        6.62
+{txt}             Tubas {c |}{res}      1,080        2.24        8.86
+{txt}          Tulkarem {c |}{res}      2,357        4.89       13.75
+{txt}         Qualqilya {c |}{res}      1,503        3.12       16.86
+{txt}            Salfit {c |}{res}      1,409        2.92       19.78
+{txt}            Nablus {c |}{res}      4,180        8.67       28.45
+{txt}          Ramallah {c |}{res}      3,350        6.94       35.39
+{txt}         Jerusalem {c |}{res}      4,269        8.85       44.24
+{txt}           Jericho {c |}{res}        997        2.07       46.31
+{txt}         Bethlehem {c |}{res}      2,025        4.20       50.51
+{txt}            Hebron {c |}{res}      6,638       13.76       64.27
+{txt}Gaza North/Jabalya {c |}{res}      3,085        6.40       70.66
+{txt}         Gaza City {c |}{res}      6,153       12.75       83.42
+{txt}        Khanyounis {c |}{res}      3,495        7.25       90.66
+{txt}     Deir El-Balah {c |}{res}      2,425        5.03       95.69
+{txt}             Rafah {c |}{res}      2,079        4.31      100.00
+{txt}{hline 19}{c +}{hline 35}
+             Total {c |}{res}     48,240      100.00
+{txt}
+{com}. egen district_year = group(district year)
+{txt}
+{com}. 
+. *interactions between aid types and refugee status
+. 
+. gen pna_refugees = pna * refugees
+{txt}(1309 missing values generated)
+
+{com}. gen received_pna_refugees = received_pna * refugees
+{txt}
+{com}. 
+. gen charity_refugees = charity * refugees
+{txt}(1309 missing values generated)
+
+{com}. gen received_charity_refugees = received_charity * refugees
+{txt}
+{com}. 
+. gen international_refugees = international * refugees
+{txt}(1309 missing values generated)
+
+{com}. gen received_inter_refugees = received_international * refugees
+{txt}
+{com}. 
+. gen other_refugees = other * refugees
+{txt}(1309 missing values generated)
+
+{com}. gen received_other_refugees = received_other * refugees
+{txt}
+{com}. 
+. *interactions between aid types and low productivity indicators
+. 
+. gen pna_f_inc_less_600 = pna * f_inc_less_600
+{txt}(5260 missing values generated)
+
+{com}. gen received_pna_f_inc_less_600 = received_pna * f_inc_less_600
+{txt}(3951 missing values generated)
+
+{com}. gen charity_f_inc_less_600 = charity * f_inc_less_600
+{txt}(5260 missing values generated)
+
+{com}. gen received_charity_f_inc_less_600 = received_charity * f_inc_less_600
+{txt}(3951 missing values generated)
+
+{com}. gen international_f_inc_less_600 = international * f_inc_less_600
+{txt}(5260 missing values generated)
+
+{com}. gen received_inter_f_inc_less_600 = received_international * f_inc_less_600
+{txt}(3951 missing values generated)
+
+{com}. gen other_f_inc_less_600 = other * f_inc_less_600
+{txt}(5260 missing values generated)
+
+{com}. gen received_other_f_inc_less_600 = received_other * f_inc_less_600
+{txt}(3951 missing values generated)
+
+{com}. 
+. save "Aid_Rad\master_data.dta", replace
+{txt}file Aid_Rad\master_data.dta saved
+
+{com}. 
+. *create 2004-2007 dataset
+. 
+. use "Aid_Rad\master_data.dta", clear
+{txt}
+{com}. 
+. keep if year <= 2007
+{txt}(28176 observations deleted)
+
+{com}. 
+. *interactions between aid types and Gaza Strip
+. 
+. gen gaza_pna = gaza*pna
+{txt}
+{com}. gen gaza_received_pna = gaza*received_pna
+{txt}
+{com}. 
+. gen gaza_charity = gaza*charity
+{txt}
+{com}. gen gaza_received_charity = gaza*received_charity
+{txt}
+{com}. 
+. gen gaza_international = gaza*international
+{txt}
+{com}. gen gaza_received_inter = gaza*received_international
+{txt}
+{com}. 
+. gen gaza_other = gaza*other
+{txt}
+{com}. gen gaza_received_other = gaza*received_other
+{txt}
+{com}. 
+. save "Aid_Rad\2004-2007.dta", replace
+{txt}(note: file Aid_Rad\2004-2007.dta not found)
+file Aid_Rad\2004-2007.dta saved
+
+{com}. 
+. *create 2009-2014 dataset
+. 
+. use "Aid_Rad\master_data.dta", clear
+{txt}
+{com}. 
+. keep if year >=2009
+{txt}(20064 observations deleted)
+
+{com}. 
+. gen gaza_pna = gaza*pna
+{txt}(1309 missing values generated)
+
+{com}. gen gaza_received_pna = gaza*received_pna
+{txt}
+{com}. 
+. gen gaza_charity = gaza*charity
+{txt}(1309 missing values generated)
+
+{com}. gen gaza_received_charity = gaza*received_charity
+{txt}
+{com}. 
+. gen gaza_international = gaza*international
+{txt}(1309 missing values generated)
+
+{com}. gen gaza_received_inter = gaza*received_international
+{txt}
+{com}. 
+. gen gaza_other = gaza*other
+{txt}(1309 missing values generated)
+
+{com}. gen gaza_received_other = gaza*received_other
+{txt}
+{com}. 
+. save "Aid_Rad\2009-2014.dta", replace
+{txt}(note: file Aid_Rad\2009-2014.dta not found)
+file Aid_Rad\2009-2014.dta saved
+
+{com}. 
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\akadi\Documents\PhD\Data\Aid_Rad\data_creation.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res} 4 Dec 2022, 20:45:37
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
